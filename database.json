@@ -15,7 +15,7 @@
       "category": "mobile",
       "price": 175000,
       "specs": "128 Go - Super Retina XDR",
-      "image": "ipo.png"
+      "image": "<https://i.ibb.co/rR4JFDGw/ipo.png"
     },
     {
       "id": 2,
@@ -23,7 +23,7 @@
       "category": "mobile",
       "price": 210000,
       "specs": "128 Go - Écran 120Hz",
-      "image": "IPH 13P.jpg"
+      "image": "https://i.ibb.co/QF0pmsST/IPH-13P.jpg"
     },
     {
       "id": 3,
@@ -31,7 +31,7 @@
       "category": "mobile",
       "price": 180000,
       "specs": "128 Go - Châssis Acier - LiDAR",
-      "image": "IPH 12P.jpg"
+      "image": "https://i.ibb.co/FRWSy8p/IPH-12P.jpg"
     },
     {
       "id": 4,
@@ -39,7 +39,7 @@
       "category": "mobile",
       "price": 150000,
       "specs": "128 Go - Puce A14 Bionic",
-      "image": "IPH 12.jpg"
+      "image": "https://i.ibb.co/1tRrRJq1/IPH-12.jpg"
     },
     {
       "id": 5,
@@ -47,7 +47,7 @@
       "category": "mobile",
       "price": 7000,
       "specs": "Réduction de bruit - Premium",
-      "image": "AIRP2.jpg"
+      "image": "https://i.ibb.co/RWLHQVh/AIRP2.jpg"
     },
     {
       "id": 6,
@@ -55,7 +55,7 @@
       "category": "mobile",
       "price": 4000,
       "specs": "Commandes tactiles - Éco",
-      "image": "AIRP2.jpg"
+      "image": "https://i.ibb.co/RWLHQVh/AIRP2.jpg"
     },
     {
       "id": 7,
@@ -63,7 +63,7 @@
       "category": "mobile",
       "price": 4000,
       "specs": "Boîtier USB-C - Son spatial",
-      "image": "AIRP 4.jpg"
+      "image": "https://i.ibb.co/XZcv4w6f/AIRP-4.jpg"
     },
     {
       "id": 8,
@@ -71,7 +71,7 @@
       "category": "mobile",
       "price": 4000,
       "specs": "Audio spatial - MagSafe",
-      "image": "AIRP 3.jpg"
+      "image": "https://i.ibb.co/4njwJS9z/AIRP-3.jpg"
     },
     {
       "id": 9,
@@ -79,7 +79,7 @@
       "category": "gaming",
       "price": 9000,
       "specs": "Sans fil 2.4 GHz - PC & Xbox",
-      "image": "XBOX360.jpg"
+      "image": "https://i.ibb.co/bgk9K86J/XBOX360.jpg"
     },
     {
       "id": 10,
@@ -87,7 +87,7 @@
       "category": "gaming",
       "price": 9000,
       "specs": "Bluetooth - Pavé tactile - PS4",
-      "image": "DS4.jpg"
+      "image": "https://i.ibb.co/whNx2brz/DS4.jpg"
     }
   ]
 }
