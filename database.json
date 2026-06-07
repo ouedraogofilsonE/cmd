@@ -1,0 +1,93 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Admin Filson",
+      "email": "admin@filson.bf",
+      "password": "filson2026",
+      "role": "admin"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "iPhone 13 Standard",
+      "category": "mobile",
+      "price": 175000,
+      "specs": "128 Go - Super Retina XDR",
+      "image": "ipo.png"
+    },
+    {
+      "id": 2,
+      "name": "iPhone 13 Pro",
+      "category": "mobile",
+      "price": 210000,
+      "specs": "128 Go - Écran 120Hz",
+      "image": "IPH 13P.jpg"
+    },
+    {
+      "id": 3,
+      "name": "iPhone 12 Pro",
+      "category": "mobile",
+      "price": 180000,
+      "specs": "128 Go - Châssis Acier - LiDAR",
+      "image": "IPH 12P.jpg"
+    },
+    {
+      "id": 4,
+      "name": "iPhone 12 Standard",
+      "category": "mobile",
+      "price": 150000,
+      "specs": "128 Go - Puce A14 Bionic",
+      "image": "IPH 12.jpg"
+    },
+    {
+      "id": 5,
+      "name": "AirPods Pro 2 (1ère Qualité)",
+      "category": "mobile",
+      "price": 7000,
+      "specs": "Réduction de bruit - Premium",
+      "image": "AIRP2.jpg"
+    },
+    {
+      "id": 6,
+      "name": "AirPods Pro 2 (2ème Qualité)",
+      "category": "mobile",
+      "price": 4000,
+      "specs": "Commandes tactiles - Éco",
+      "image": "AIRP2.jpg"
+    },
+    {
+      "id": 7,
+      "name": "AirPods 4",
+      "category": "mobile",
+      "price": 4000,
+      "specs": "Boîtier USB-C - Son spatial",
+      "image": "AIRP 4.jpg"
+    },
+    {
+      "id": 8,
+      "name": "AirPods 3",
+      "category": "mobile",
+      "price": 4000,
+      "specs": "Audio spatial - MagSafe",
+      "image": "AIRP 3.jpg"
+    },
+    {
+      "id": 9,
+      "name": "Manette Xbox 360 avec Fil",
+      "category": "gaming",
+      "price": 9000,
+      "specs": "Sans fil 2.4 GHz - PC & Xbox",
+      "image": "XBOX360.jpg"
+    },
+    {
+      "id": 10,
+      "name": "Manette PS4 DualShock 4",
+      "category": "gaming",
+      "price": 9000,
+      "specs": "Bluetooth - Pavé tactile - PS4",
+      "image": "DS4.jpg"
+    }
+  ]
+}

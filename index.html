@@ -1,0 +1,686 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FILSON Electronics | Boutique & Panier</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --ali-orange: #ff4747; --ali-dark: #0f172a; --bg-light: #f4f6f9; --white: #ffffff; --text-main: #1e293b; --text-muted: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-main); }
+
+        /* ── Toast Notifications ───────────────────────────────── */
+        #toastContainer { position: fixed; top: 80px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { display: flex; align-items: center; gap: 10px; padding: 12px 20px; background: #ffffff; color: #1e293b; border-left: 4px solid #cbd5e1; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-radius: 6px; font-size: 14px; font-weight: 500; min-width: 280px; opacity: 0; transform: translateY(-20px); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); pointer-events: auto; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { border-left-color: #10b981; }
+        .toast.error { border-left-color: #ef4444; }
+        .toast.info { border-left-color: #3b82f6; }
+        .toast .material-icons { font-size: 20px; }
+        .toast .toast-success-icon { color: #10b981; }
+        .toast .toast-error-icon { color: #ef4444; }
+        .toast .toast-info-icon { color: #3b82f6; }
+
+        /* ── Modals Structure (Universal Overlay) ──────────────── */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-box { background: var(--white); border-radius: 12px; width: 100%; max-width: 500px; padding: 30px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative; animation: modalSlideUp 0.3s ease-out; max-height: 90vh; overflow-y: auto; }
+        @keyframes modalSlideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .modal-box h3 { font-size: 20px; font-weight: 700; color: var(--ali-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .modal-close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-muted); cursor: pointer; }
+        .modal-close-btn:hover { color: var(--ali-orange); }
+
+        /* Form Controls inside Modals */
+        .modal-box input, .modal-box select, .modal-box textarea { width: 100%; padding: 12px 16px; margin-bottom: 16px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 14px; transition: border-color 0.2s; }
+        .modal-box input:focus, .modal-box select:focus, .modal-box textarea:focus { border-color: var(--ali-orange); box-shadow: 0 0 0 3px rgba(255, 71, 71, 0.1); }
+        .modal-buttons { display: flex; gap: 12px; justify-content: flex-end; margin-top: 10px; }
+        
+        .btn { padding: 11px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: background-color 0.2s, transform 0.1s; }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background-color: var(--ali-orange); color: white; }
+        .btn-primary:hover { background-color: #ff2e2e; }
+        .btn-secondary { background-color: #f1f5f9; color: var(--text-main); }
+        .btn-secondary:hover { background-color: #e2e8f0; }
+        .btn-dark { background-color: var(--ali-dark); color: white; }
+        .btn-dark:hover { background-color: #1e293b; }
+        .btn-danger { background-color: #ef4444; color: white; }
+        .btn-danger:hover { background-color: #dc2626; }
+
+        /* ── Header & Navigation ───────────────────────────────── */
+        .top-flash-bar { background-color: var(--ali-orange); color: var(--white); text-align: center; padding: 8px 10px; font-size: 13px; font-weight: 600; }
+        header { background-color: var(--ali-dark); color: var(--white); position: sticky; top: 0; z-index: 1000; padding: 15px 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .header-container { max-width: 1300px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; gap: 20px; }
+        .logo { font-size: 24px; font-weight: 800; cursor: pointer; letter-spacing: -0.5px; }
+        .logo span { color: var(--ali-orange); }
+        
+        .search-bar-container { flex-grow: 1; max-width: 450px; display: flex; position: relative; }
+        .search-bar-container input { width: 100%; padding: 11px 16px; border: none; border-radius: 8px; outline: none; background-color: rgba(255,255,255,0.1); color: white; font-size: 14px; transition: background-color 0.2s; padding-right: 50px; }
+        .search-bar-container input::placeholder { color: #94a3b8; }
+        .search-bar-container input:focus { background-color: rgba(255,255,255,0.15); }
+        .search-btn { position: absolute; right: 4px; top: 4px; background-color: var(--ali-orange); border: none; color: var(--white); width: 36px; height: 36px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .search-btn:hover { background-color: #ff2e2e; }
+        
+        .nav-actions { display: flex; align-items: center; gap: 20px; }
+        .auth-zone { display: flex; gap: 12px; align-items: center; }
+        .btn-nav-auth { background: none; border: 1px solid rgba(255,255,255,0.3); color: var(--white); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; }
+        .btn-nav-auth:hover { border-color: white; background: rgba(255,255,255,0.05); }
+        .btn-nav-auth.register { background-color: var(--ali-orange); border: none; }
+        .btn-nav-auth.register:hover { background-color: #ff2e2e; }
+        
+        .user-logged { color: #25d366; font-weight: 700; font-size: 14px; display: none; align-items: center; gap: 8px; }
+        .user-logged .username { color: white; background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 20px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+
+        .cart-header-btn { position: relative; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border: none; color: white; cursor: pointer; width: 44px; height: 44px; border-radius: 8px; transition: background-color 0.2s; }
+        .cart-header-btn:hover { background: rgba(255,255,255,0.1); }
+        .cart-count { position: absolute; top: -6px; right: -6px; background-color: var(--ali-orange); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        /* ── Main Layout ───────────────────────────────────────── */
+        .hero-section { max-width: 1300px; margin: 25px auto; padding: 0 20px; display: grid; grid-template-columns: 280px 1fr; gap: 25px; }
+        
+        /* Sidebar Menu */
+        .sidebar-menu { background-color: var(--white); border-radius: 12px; padding: 20px 0; height: max-content; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .sidebar-menu h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); padding: 0 20px 12px 20px; border-bottom: 1px solid #f1f5f9; margin-bottom: 10px; }
+        .sidebar-menu ul { list-style: none; }
+        .sidebar-menu li a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; font-size: 14px; font-weight: 500; color: #475569; cursor: pointer; transition: all 0.2s; }
+        .sidebar-menu li a .material-icons { color: #94a3b8; font-size: 20px; }
+        .sidebar-menu li a:hover { background-color: #f8fafc; color: var(--ali-dark); }
+        .sidebar-menu li a:hover .material-icons { color: var(--ali-dark); }
+        .sidebar-menu li a.active { background-color: #fff1f1; color: var(--ali-orange); font-weight: 600; }
+        .sidebar-menu li a.active .material-icons { color: var(--ali-orange); }
+        
+        /* Banner & Admin Header Trigger */
+        .main-banner { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 12px; color: var(--white); padding: 35px 40px; margin-bottom: 25px; position: relative; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .main-banner h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+        .main-banner p { color: #94a3b8; font-size: 14px; }
+        .admin-trigger-zone { margin-top: 15px; display: none; }
+
+        /* ── Products Grid ─────────────────────────────────────── */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px; }
+        .product-card { background-color: var(--white); border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; position: relative; transition: transform 0.2s, box-shadow 0.2s; }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -8px rgba(0,0,0,0.1); }
+        
+        .product-img-box { background-color: #f8fafc; height: 180px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; border-radius: 8px; padding: 10px; overflow: hidden; }
+        .product-name { font-size: 14px; font-weight: 600; color: var(--ali-dark); height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; }
+        .spec-badge { font-size: 12px; background-color: #f1f5f9; color: #475569; padding: 4px 8px; border-radius: 6px; width: max-content; margin: 8px 0; font-weight: 500; }
+        .current-price { font-size: 18px; font-weight: 800; color: var(--ali-orange); margin: 6px 0 14px 0; }
+        
+        .action-btn { background-color: var(--ali-dark); color: var(--white); text-align: center; padding: 11px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; margin-top: auto; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background-color 0.2s; width: 100%; }
+        .action-btn:hover { background-color: var(--ali-orange); }
+
+        /* Admin Management Float Box inside cards */
+        .admin-actions-box { position: absolute; top: 12px; right: 12px; display: none; gap: 6px; z-index: 10; }
+        .admin-mini-btn { width: 32px; height: 32px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .admin-mini-btn.btn-edit { background-color: #3b82f6; }
+        .admin-mini-btn.btn-edit:hover { background-color: #2563eb; }
+        .admin-mini-btn.btn-delete { background-color: #ef4444; }
+        .admin-mini-btn.btn-delete:hover { background-color: #dc2626; }
+
+        /* ── Basket/Cart Layout ────────────────────────────────── */
+        .cart-list-wrapper { display: flex; flex-direction: column; gap: 16px; margin: 15px 0; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9; }
+        .cart-item-details strong { font-size: 14px; color: var(--ali-dark); display: block; margin-bottom: 2px; }
+        .cart-item-details span { font-size: 13px; color: var(--ali-orange); font-weight: 600; }
+        .cart-item-actions { display: flex; align-items: center; gap: 8px; background: #f1f5f9; padding: 4px; border-radius: 6px; }
+        .cart-qty-btn { background: white; border: none; width: 26px; height: 26px; border-radius: 4px; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .cart-qty-btn:hover { background: #e2e8f0; }
+        .cart-qty-value { font-size: 13px; font-weight: 600; min-width: 20px; text-align: center; }
+        
+        .cart-total-price { font-size: 18px; font-weight: 800; color: var(--ali-dark); padding: 15px 0; text-align: right; border-top: 2px dashed #e2e8f0; margin-top: 10px; }
+        .whatsapp-order-btn { background-color: #25d366 !important; color: white !important; width: 100%; justify-content: center; margin-top: 10px; }
+        .whatsapp-order-btn:hover { background-color: #20ba5a !important; }
+
+        /* Empty State */
+        .empty-cart-text { color: var(--text-muted); text-align: center; padding: 30px 0; font-size: 14px; }
+        .no-products { grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px 0; font-size: 14px; background: white; border-radius: 8px; border: 1px dashed #cbd5e1; }
+
+        footer { background-color: var(--ali-dark); color: #94a3b8; padding: 30px 20px; margin-top: 50px; text-align: center; font-size: 14px; border-top: 4px solid var(--ali-orange); }
+    </style>
+</head>
+<body>
+
+    <div id="toastContainer"></div>
+    <div class="top-flash-bar">🇧🇫 FILSON ELECTRONICS | Système de Vitrine & Commande Panier WhatsApp</div>
+
+    <header>
+        <div class="header-container">
+            <div class="logo" onclick="resetToHome()">FILSON <span>Electronics</span></div>
+            <div class="search-bar-container">
+                <input type="text" id="searchInput" placeholder="Rechercher un appareil...">
+                <button class="search-btn" onclick="searchProducts()"><span class="material-icons">search</span></button>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="cart-header-btn" onclick="openModal('cartModal')">
+                    <span class="material-icons">shopping_cart</span>
+                    <span class="cart-count" id="cartCountBadge">0</span>
+                </button>
+
+                <div class="auth-zone" id="authZone">
+                    <button class="btn-nav-auth" onclick="openModal('loginModal')">Se connecter</button>
+                    <button class="btn-nav-auth register" onclick="openModal('registerModal')">Créer un compte</button>
+                </div>
+                <div class="user-logged" id="userLoggedZone">
+                    <span class="username"><span class="material-icons" style="font-size:16px;">account_circle</span><span id="usernameDisplay">Client</span></span> 
+                    <button class="btn-nav-auth" style="border-color:var(--ali-orange); color:var(--ali-orange);" onclick="logout()">Déconnexion</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="hero-section">
+        <nav class="sidebar-menu">
+            <h3>Catégories</h3>
+            <ul>
+                <li><a onclick="filterCategory('mobile', this)" class="active"><span class="material-icons">smartphone</span>Tech & Mobile</a></li>
+                <li><a onclick="filterCategory('ordinateurs', this)"><span class="material-icons">laptop</span>Ordinateurs</a></li>
+                <li><a onclick="filterCategory('gaming', this)"><span class="material-icons">sports_esports</span>Gaming</a></li>
+                <li><a onclick="filterCategory('composants', this)"><span class="material-icons">memory</span>Composants</a></li>
+            </ul>
+        </nav>
+
+        <div>
+            <div class="main-banner">
+                <h2>Espace Performance - Filson Electronics</h2>
+                <p>Catalogue mis à jour dynamiquement. Ajoutez vos articles et finalisez par message groupé automatisé.</p>
+                <div class="admin-trigger-zone" id="adminTriggerZone">
+                    <button class="btn btn-primary" onclick="openAdminAddModal()"><span class="material-icons">add_box</span> Ajouter un nouvel appareil</button>
+                </div>
+            </div>
+            <div class="products-grid" id="productsGrid"></div>
+        </div>
+    </main>
+
+    <div id="registerModal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close-btn" onclick="closeModal('registerModal')"><span class="material-icons">close</span></button>
+            <h3><span class="material-icons">person_add</span> Création de compte Client</h3>
+            <input type="text" id="regName" placeholder="Nom complet">
+            <input type="email" id="regEmail" placeholder="Adresse Email">
+            <input type="password" id="regPassword" placeholder="Mot de passe">
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal('registerModal')">Annuler</button>
+                <button class="btn btn-dark" onclick="handleRegister()">S'inscrire</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close-btn" onclick="closeModal('loginModal')"><span class="material-icons">close</span></button>
+            <h3><span class="material-icons">lock_open</span> Connexion</h3>
+            <input type="email" id="loginEmail" placeholder="Votre Email">
+            <input type="password" id="loginPassword" placeholder="Votre Mot de passe">
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal('loginModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="handleLogin()">Entrer</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cartModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 550px;">
+            <button class="modal-close-btn" onclick="closeModal('cartModal')"><span class="material-icons">close</span></button>
+            <h3><span class="material-icons">shopping_basket</span> Mon Panier d'Achat</h3>
+            <div class="cart-list-wrapper" id="cartItemsList">
+                <p class="empty-cart-text">Votre panier est vide pour le moment.</p>
+            </div>
+            <div class="cart-total-price" id="cartTotalDisplay">Total : 0 F CFA</div>
+            <button class="btn whatsapp-order-btn" onclick="sendWhatsAppOrder()">
+                <span class="material-icons">phone_android</span> Envoyer la commande groupée par WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <div id="adminProductModal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close-btn" onclick="closeAdminModal()"><span class="material-icons">close</span></button>
+            <h3 id="formAdminTitle">🛠️ AJOUTER UN APPAREIL AU CATALOGUE</h3>
+            <input type="hidden" id="editProductId" value="">
+            <label style="font-size:12px; font-weight:600; color:var(--text-muted); display:block; margin-bottom:5px;">Désignation</label>
+            <input type="text" id="prodName" placeholder="Ex: iPhone 13 Pro">
+            
+            <label style="font-size:12px; font-weight:600; color:var(--text-muted); display:block; margin-bottom:5px;">Catégorie d'affichage</label>
+            <select id="prodCategory">
+                <option value="mobile">Tech & Mobile</option>
+                <option value="ordinateurs">Ordinateurs</option>
+                <option value="gaming">Gaming</option>
+                <option value="composants">Composants & Acc.</option>
+            </select>
+            
+            <label style="font-size:12px; font-weight:600; color:var(--text-muted); display:block; margin-bottom:5px;">Prix de vente (en chiffres)</label>
+            <input type="text" id="prodPrice" placeholder="Ex: 210000">
+            
+            <label style="font-size:12px; font-weight:600; color:var(--text-muted); display:block; margin-bottom:5px;">Fiche technique abrégée</label>
+            <input type="text" id="prodSpecs" placeholder="Ex: 128 Go - Écran ProMotion 120Hz">
+            
+            <label style="font-size:12px; font-weight:600; color:var(--text-muted); display:block; margin-bottom:5px;">Lien URL Image (Optionnel)</label>
+            <input type="text" id="prodImage" placeholder="Lien HTTP ou laisser vide">
+            
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeAdminModal()">Annuler</button>
+                <button class="btn btn-primary" id="btnAdminSubmit" onclick="saveProduct()">Publier l'article</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 400px; text-align: center;">
+            <span class="material-icons" style="font-size:48px; color:#ef4444; margin-bottom:10px;">error_outline</span>
+            <h3>Confirmer la suppression</h3>
+            <p style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">Voulez-vous vraiment retirer cet appareil définitivement de la vitrine de vente ?</p>
+            <input type="hidden" id="deleteProductId" value="">
+            <div class="modal-buttons" style="justify-content: center;">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Annuler</button>
+                <button class="btn btn-danger" onclick="confirmDeleteProduct()">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 FILSON Electronics | Bureau de Vente & Stock Ouagadougou | Service Client WhatsApp : +226 05 76 48 62</p>
+    </footer>
+
+    <script>
+        const BASE_URL = 'http://localhost:5000/api';
+        let currentUser = null;
+        let currentProducts = []; 
+        let cart = []; 
+        let activeCategory = 'mobile';
+
+        // ── TOAST MESSAGES SYSTEM ───────────────────────────────
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'info';
+            if (type === 'success') icon = 'check_circle';
+            if (type === 'error') icon = 'warning';
+
+            toast.innerHTML = `
+                <span class="material-icons toast-${type}-icon">${icon}</span>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.add('show'), 50);
+
+            setTimeout(() => {
+                toast.remove('show');
+                setTimeout(() => toast.remove(), 350);
+            }, 3500);
+        }
+
+        // ── MODALS GLOBAL MANAGEMENT ────────────────────────────
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // Setup Event Observers to Close Overlays on Outer Click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if(e.target === this) {
+                    if(this.id === 'adminProductModal') closeAdminModal();
+                    else if(this.id === 'deleteModal') closeDeleteModal();
+                    else this.style.display = 'none';
+                }
+            });
+        });
+
+        function resetToHome() {
+            document.getElementById('searchInput').value = "";
+            const firstLink = document.querySelector('.sidebar-menu li a');
+            filterCategory('mobile', firstLink);
+        }
+
+        // ── AUTHENTICATION BACKEND SERVICES ─────────────────────
+        async function handleRegister() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            if(!name || !email || !password) return showToast("Veuillez remplir tous les champs d'inscription", "error");
+
+            try {
+                const res = await fetch(`${BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    showToast(data.message, "success");
+                    closeModal('registerModal');
+                    openModal('loginModal');
+                } else {
+                    showToast(data.message, "error");
+                }
+            } catch { showToast("Erreur d'accès au serveur d'authentification.", "error"); }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if(!email || !password) return showToast("Veuillez remplir vos accès.", "error");
+
+            try {
+                const res = await fetch(`${BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if(!res.ok) return showToast(data.message, "error");
+
+                currentUser = data.user;
+                closeModal('loginModal');
+                document.getElementById('authZone').style.display = 'none';
+                document.getElementById('userLoggedZone').style.display = 'flex';
+                document.getElementById('usernameDisplay').innerText = currentUser.name;
+
+                if(currentUser.role === 'admin') {
+                    document.getElementById('adminTriggerZone').style.display = 'block';
+                }
+                showToast(`Heureux de vous revoir, ${currentUser.name}`, "success");
+                fetchProducts(activeCategory);
+            } catch { showToast("Erreur de communication avec le serveur.", "error"); }
+        }
+
+        function logout() {
+            currentUser = null;
+            cart = [];
+            updateCartUI();
+            document.getElementById('authZone').style.display = 'flex';
+            document.getElementById('userLoggedZone').style.display = 'none';
+            document.getElementById('adminTriggerZone').style.display = 'none';
+            resetAdminForm();
+            showToast("Déconnexion réussie.", "info");
+            fetchProducts(activeCategory);
+        }
+
+        // ── STOCK / PRODUCTS ENGINE ─────────────────────────────
+        async function fetchProducts(category = '', search = '') {
+            const grid = document.getElementById('productsGrid');
+            
+            // CORRECTION SÉCURITÉ : Si l'élément n'est pas encore prêt dans la page, on réessaye un peu plus tard
+            if (!grid) {
+                setTimeout(() => fetchProducts(category, search), 100);
+                return;
+            }
+
+            grid.innerHTML = '<p style="padding:20px; color:var(--text-muted);">Mise à jour de la vitrine...</p>';
+            try {
+                let res = await fetch(`${BASE_URL}/products?category=${category}&search=${search}`);
+                currentProducts = await res.json();
+                grid.innerHTML = '';
+                
+                if(currentProducts.length === 0) {
+                    grid.innerHTML = '<p class="no-products">Aucun appareil trouvé dans cette section.</p>';
+                    return;
+                }
+
+                const isAdmin = currentUser && currentUser.role === 'admin';
+
+                currentProducts.forEach(p => {
+                    // CORRECTION SÉCURITÉ PRIX : Accepte les nombres et les chaînes de texte
+                    let displayPrice = p.price;
+                    if (typeof p.price === 'number') {
+                        displayPrice = p.price.toLocaleString('fr-FR') + " F CFA";
+                    } else if (p.price && !p.price.includes('F CFA')) {
+                        displayPrice = p.price + " F CFA";
+                    }
+                    
+                    // CORRECTION SÉCURITÉ SPECS : Évite le crash si les specs n'existent pas
+                    let productSpecs = p.specs ? p.specs : "Aucune caractéristique";
+
+                    grid.innerHTML += `
+                        <div class="product-card">
+                            <div class="admin-actions-box" style="display: ${isAdmin ? 'flex' : 'none'}">
+                                <button class="admin-mini-btn btn-edit" onclick="setupEdit(${p.id})"><span class="material-icons" style="font-size:16px">edit</span></button>
+                                <button class="admin-mini-btn btn-delete" onclick="openDeleteModal(${p.id})"><span class="material-icons" style="font-size:16px">delete</span></button>
+                            </div>
+                            <div class="product-img-box">
+                                <img src="${p.image || 'https://placehold.co/300x200?text=FILSON'}" style="max-width:100%; max-height:100%; object-fit:contain;">
+                            </div>
+                            <div class="product-name">${p.name}</div>
+                            <div class="spec-badge">${productSpecs}</div>
+                            <div class="current-price">${displayPrice}</div>
+                            <button class="action-btn" onclick="addToCart(${p.id})"><span class="material-icons" style="font-size:16px;">add_shopping_cart</span> Ajouter au panier</button>
+                        </div>
+                    `;
+                });
+            } catch(e) { grid.innerHTML = '<p class="no-products">Erreur réseau lors du chargement des stocks.</p>'; }
+        }
+
+        // ── LOCAL BASKET (PANIER) CONTROLLER ────────────────────
+        function addToCart(id) {
+            const product = currentProducts.find(p => p.id === id);
+            if(!product) return;
+
+            const existing = cart.find(item => item.product.id === id);
+            if(existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ product, quantity: 1 });
+            }
+            updateCartUI();
+            showToast(`${product.name} ajouté au panier d'achat !`, "success");
+        }
+
+        function changeQuantity(id, amount) {
+            const item = cart.find(item => item.product.id === id);
+            if(!item) return;
+            item.quantity += amount;
+            if(item.quantity <= 0) {
+                cart = cart.filter(item => item.product.id !== id);
+                showToast("Article retiré du panier.", "info");
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const listZone = document.getElementById('cartItemsList');
+            const badge = document.getElementById('cartCountBadge');
+            const totalDisplay = document.getElementById('cartTotalDisplay');
+
+            let totalItems = 0;
+            let totalCost = 0;
+
+            if(cart.length === 0) {
+                listZone.innerHTML = '<p class="empty-cart-text">Votre panier est vide pour le moment.</p>';
+                badge.innerText = '0';
+                totalDisplay.innerText = 'Total : 0 F CFA';
+                return;
+            }
+
+            listZone.innerHTML = '';
+            cart.forEach(item => {
+                totalItems += item.quantity;
+                
+                // Extraction sécurisée de la valeur numérique du prix
+                let rawPrice = typeof item.product.price === 'number' ? item.product.price : parseInt(item.product.price.replace(/[^0-9]/g, '')) || 0;
+                let subTotal = rawPrice * item.quantity;
+                totalCost += subTotal;
+
+                listZone.innerHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-details">
+                            <strong>${item.product.name}</strong>
+                            <span>${rawPrice.toLocaleString('fr-FR')} F CFA</span>
+                        </div>
+                        <div class="cart-item-actions">
+                            <button class="cart-qty-btn" onclick="changeQuantity(${item.product.id}, -1)">-</button>
+                            <span class="cart-qty-value">${item.quantity}</span>
+                            <button class="cart-qty-btn" onclick="changeQuantity(${item.product.id}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            badge.innerText = totalItems;
+            totalDisplay.innerText = `Total : ${totalCost.toLocaleString('fr-FR')} F CFA`;
+        }
+
+        function sendWhatsAppOrder() {
+            if(cart.length === 0) return showToast("Votre panier est vide !", "error");
+            
+            let clientName = currentUser ? currentUser.name : "Client Invité";
+            let text = `*NOUVELLE COMMANDE - FILSON ELECTRONICS*\n\n`;
+            text += `*Client :* ${clientName}\n`;
+            text += `----------------------------------\n`;
+
+            let totalCost = 0;
+            cart.forEach((item, index) => {
+                let rawPrice = typeof item.product.price === 'number' ? item.product.price : parseInt(item.product.price.replace(/[^0-9]/g, '')) || 0;
+                let subTotal = rawPrice * item.quantity;
+                totalCost += subTotal;
+                text += `${index + 1}. *${item.product.name}*\n   Quantité : ${item.quantity}\n   Prix : ${subTotal.toLocaleString('fr-FR')} F CFA\n\n`;
+            });
+
+            text += `----------------------------------\n`;
+            text += `*MONTANT TOTAL : ${totalCost.toLocaleString('fr-FR')} F CFA*`;
+
+            const whatsappUrl = `https://wa.me/22605764862?text=${encodeURIComponent(text)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // ── ADMINISTRATIVE MANAGEMENT FUNCTIONS (ADMIN) ──────────
+        function openAdminAddModal() {
+            resetAdminForm();
+            openModal('adminProductModal');
+        }
+
+        function closeAdminModal() {
+            closeModal('adminProductModal');
+            resetAdminForm();
+        }
+
+        async function saveProduct() {
+            const id = document.getElementById('editProductId').value;
+            const name = document.getElementById('prodName').value.trim();
+            const category = document.getElementById('prodCategory').value;
+            let price = document.getElementById('prodPrice').value.trim();
+            const specs = document.getElementById('prodSpecs').value.trim();
+            const image = document.getElementById('prodImage').value.trim();
+
+            if(!name || !price) return showToast("Le nom et le prix sont obligatoires.", "error");
+
+            if(!isNaN(price) && price !== "") price = parseInt(price);
+
+            const payload = { name, category, price, specs, image, adminEmail: currentUser.email };
+            let url = `${BASE_URL}/products/add`;
+            let method = 'POST';
+
+            if(id) {
+                url = `${BASE_URL}/products/update/${id}`;
+                method = 'PUT';
+            }
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    showToast(data.message, "success");
+                    closeAdminModal();
+                    fetchProducts(activeCategory);
+                } else {
+                    showToast(data.message, "error");
+                }
+            } catch { showToast("Erreur lors de l'enregistrement de l'appareil.", "error"); }
+        }
+
+        function setupEdit(id) {
+            const product = currentProducts.find(p => p.id === id);
+            if(!product) return;
+
+            document.getElementById('editProductId').value = product.id;
+            document.getElementById('prodName').value = product.name;
+            document.getElementById('prodCategory').value = product.category;
+            
+            // CORRECTION SÉCURITÉ PRIX DANS FORMULAIRE (Nombre / Texte)
+            if (typeof product.price === 'number') {
+                document.getElementById('prodPrice').value = product.price;
+            } else if (typeof product.price === 'string') {
+                document.getElementById('prodPrice').value = product.price.replace(/[^0-9]/g, '');
+            } else {
+                document.getElementById('prodPrice').value = "";
+            }
+            
+            document.getElementById('prodSpecs').value = product.specs || "";
+            document.getElementById('prodImage').value = product.image || "";
+
+            document.getElementById('formAdminTitle').innerText = "📝 MODIFIER L'APPAREIL";
+            document.getElementById('btnAdminSubmit').innerText = "Enregistrer les modifications";
+            
+            openModal('adminProductModal');
+        }
+
+        function resetAdminForm() {
+            document.getElementById('editProductId').value = "";
+            document.getElementById('prodName').value = "";
+            document.getElementById('prodPrice').value = "";
+            document.getElementById('prodSpecs').value = "";
+            document.getElementById('prodImage').value = "";
+            document.getElementById('formAdminTitle').innerText = "🛠️ AJOUTER UN APPAREIL AU CATALOGUE";
+            document.getElementById('btnAdminSubmit').innerText = "Publier l'article";
+        }
+
+        function openDeleteModal(id) {
+            document.getElementById('deleteProductId').value = id;
+            openModal('deleteModal');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteProductId').value = "";
+            closeModal('deleteModal');
+        }
+
+        async function confirmDeleteProduct() {
+            const id = document.getElementById('deleteProductId').value;
+            if(!id) return;
+
+            try {
+                const res = await fetch(`${BASE_URL}/products/delete/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ adminEmail: currentUser.email })
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    showToast(data.message, "success");
+                    cart = cart.filter(item => item.product.id !== parseInt(id));
+                    updateCartUI();
+                    closeDeleteModal();
+                    fetchProducts(activeCategory);
+                } else {
+                    showToast(data.message, "error");
+                }
+            } catch { showToast("Erreur lors de la suppression.", "error"); }
+        }
+
+        // ── NAVIGATION & FILTERS ────────────────────────────────
+        function filterCategory(cat, el) {
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            el.classList.add('active');
+            activeCategory = cat;
+            fetchProducts(cat);
+        }
+
+        function searchProducts() { 
+            fetchProducts('', document.getElementById('searchInput').value.trim()); 
+        }
+
+        document.getElementById('searchInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') searchProducts();
+        });
+
+        window.onload = () => fetchProducts('mobile');
+    </script>
+</body>
+</html>
